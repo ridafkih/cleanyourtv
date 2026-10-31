@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <bool name="pixel_shift_enabled">true</bool>
+    <integer name="pixel_shift_amplitude_x_px">8</integer>
+    <integer name="pixel_shift_amplitude_y_px">6</integer>
+    <integer name="pixel_shift_period_x_seconds">960</integer>
+    <integer name="pixel_shift_period_y_seconds">660</integer>
+    <integer name="pixel_shift_interval_ms">20000</integer>
+</resources>

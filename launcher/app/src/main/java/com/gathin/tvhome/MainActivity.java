@@ -149,6 +149,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     private FrameLayout root;
     private WallpaperPlayer wallpaperPlayer;
     private SceneryBackground scenery;
+    private PixelShift pixelShift;
     private boolean ambientMode;
     private final Map<View, Float> ambientRestAlpha = new LinkedHashMap<>();
     private final Runnable enterAmbient = this::enterAmbientMode;
@@ -493,6 +494,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         getWindow().setBackgroundDrawable(null);
         wallpaperPlayer = new WallpaperPlayer(this, root, cfg);
         scenery = new SceneryBackground(this, root);
+        pixelShift = new PixelShift(findViewById(R.id.uiLayer), getResources());
         TextView sceneryLocation = findViewById(R.id.sceneryLocation);
         scenery.setListener(location -> showSceneryLocation(sceneryLocation, location));
         sky = findViewById(R.id.sky);
@@ -1056,6 +1058,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
 
     @Override
     protected void onStart() {
+        pixelShift.start();
         super.onStart();
         stopped = false;
         started = true;
@@ -1371,6 +1374,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
 
     @Override
     protected void onStop() {
+        pixelShift.stop();
         super.onStop();
         started = false;
         unregisterReceiver(timeReceiver);
