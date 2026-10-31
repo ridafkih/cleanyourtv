@@ -5,4 +5,6 @@
     <dimen name="tile_gap">14dp</dimen>
     <dimen name="header_gap">12dp</dimen>
     <dimen name="date_top_inset">11dp</dimen>
+    <dimen name="clock_optical_inset">-2.5dp</dimen>
+    <dimen name="hero_optical_inset">-2dp</dimen>
 </resources>
