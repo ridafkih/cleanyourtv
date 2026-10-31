@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="scenery_directory" translatable="false">wallpapers</string>
-    <integer name="scenery_rotation_seconds">30</integer>
+    <integer name="scenery_rotation_seconds">15</integer>
     <integer name="scenery_crossfade_ms">2000</integer>
     <integer name="idle_ambient_seconds">180</integer>
     <integer name="ambient_fade_ms">900</integer>
