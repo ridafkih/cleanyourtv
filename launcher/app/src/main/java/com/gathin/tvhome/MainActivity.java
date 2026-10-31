@@ -608,14 +608,14 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                                                          @NonNull Rect rect, boolean immediate,
                                                          boolean focusedChildVisible) {
                 if (singleRow) {
-                    // Sideways: scroll just enough to bring the tile's cell inside the padding. Cells are a
-                    // column wide, so the row moves a whole tile at a time and the tiles stay on the columns.
+                    // Sideways: the focused cell scrolls in far enough to leave half of the previous cell showing
+                    // at the left edge, so the row always hints that there is more behind it.
                     // The whole cell, not the card rect passed in: the card is narrower and centred in it.
                     int left = child.getLeft();
                     int right = child.getRight();
+                    int peekLeft = getPosition(child) > 0 ? child.getWidth() / 2 : getPaddingLeft();
                     int dx;
-                    if (left < getPaddingLeft()) dx = left - getPaddingLeft();
-                    else if (right > getWidth() - getPaddingRight()) dx = right - (getWidth() - getPaddingRight());
+                    if (left < peekLeft || right > getWidth() - getPaddingRight()) dx = left - peekLeft;
                     else dx = 0;
                     if (dx == 0) return false;
                     if (immediate || reducedMotion || !animations) parent.scrollBy(dx, 0);
