@@ -954,7 +954,7 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 view.animate().cancel();
                 banner.animate().cancel();
                 name.animate().cancel();
-                float scale = !animations ? 1f : advancedEffects ? 1.12f : 1.10f;
+                float scale = animations ? FOCUS_SCALE : 1f;
                 float s = focused ? scale : 1f;
                 if (!animations) {
                     view.setScaleX(1f);
