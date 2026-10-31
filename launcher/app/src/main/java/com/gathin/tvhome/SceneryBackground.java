@@ -17,7 +17,7 @@ import android.widget.ImageView;
 import org.json.JSONObject;
 
 import java.io.File;
-import java.io.FileInputStream;
+import java.nio.file.Files;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
@@ -86,8 +86,8 @@ final class SceneryBackground {
     private void readLocations(File directory, String name) {
         File manifest = new File(directory, name);
         if (!manifest.isFile()) return;
-        try (FileInputStream in = new FileInputStream(manifest)) {
-            JSONObject json = new JSONObject(new String(in.readAllBytes(), StandardCharsets.UTF_8));
+        try {
+            JSONObject json = new JSONObject(new String(Files.readAllBytes(manifest.toPath()), StandardCharsets.UTF_8));
             for (java.util.Iterator<String> keys = json.keys(); keys.hasNext(); ) {
                 String key = keys.next();
                 locations.put(key, json.getString(key));
