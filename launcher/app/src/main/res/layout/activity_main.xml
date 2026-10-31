@@ -309,6 +309,7 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentTop="true"
                 android:layout_alignParentEnd="true"
+                android:layout_marginTop="@dimen/date_top_inset"
                 android:gravity="end"
                 android:singleLine="true"
                 android:format12Hour="@string/date_format_home"
