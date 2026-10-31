@@ -3187,11 +3187,12 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                     new int[][]{new int[]{android.R.attr.state_focused}, new int[0]},
                     new int[]{VpnBadge.pillInkColor(up, true), VpnBadge.pillInkColor(up, false)});
             if (iconOnlyVpn) {
-                // The configured VPN app's mark on the plain glass button; the words go to talkback.
-                btnVpn.setContentDescription(getString(R.string.vpn));
-                btnVpn.setBackground(vpnPlainBackground.newDrawable());
+                // The configured VPN app's mark: light on the plain glass button while no VPN is up, inverted (dark on a
+                // light button) while one is; the words go to talkback.
+                btnVpn.setContentDescription(getString(up ? R.string.vpn : R.string.vpn_off));
+                btnVpn.setBackground(up ? getDrawable(R.drawable.pill_bg_active) : vpnPlainBackground.newDrawable());
                 btnVpn.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.ic_tailscale, 0, 0, 0);
-                btnVpn.setCompoundDrawableTintList(vpnPlainInk);
+                btnVpn.setCompoundDrawableTintList(up ? getColorStateList(R.drawable.pill_text_active) : vpnPlainInk);
                 btnVpn.setVisibility(View.VISIBLE);
                 return;
             }
