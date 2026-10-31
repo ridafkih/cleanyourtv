@@ -277,7 +277,7 @@
          label with icon_only_buttons, since the red state has no icon. A VPN app's kill switch keeps a VPN up while
          the app says disconnected (it holds the tunnel to block traffic), so the pill stays green then. Can also be
          set with "vpn_pill" in a theme. -->
-    <bool name="vpn_pill">false</bool>
+    <bool name="vpn_pill">true</bool>
     <!-- The dock as its own row: a lighter band, no names under the tiles, parked low on the screen with the top
          shelf above it. false makes the dock apps simply the first tiles of one plain grid (still in dock_apps
          order, no empty slots), with names under every tile and the glow behind every focused tile. -->
@@ -316,7 +316,7 @@
     <!-- With vpn_pill, the VPN pill as a round icon button too: an open lock on the plain glass button while no VPN is
          up, the closed lock in a green outline while one is (solid green only while focused, like the pill). "VPN" /
          "VPN off" become its talkback description. A theme can set "icon_only_vpn": true. -->
-    <bool name="icon_only_vpn">false</bool>
+    <bool name="icon_only_vpn">true</bool>
     <!-- The launcher's clocks (Home, the clock screensaver and the Clock screen) in 12- or 24-hour time whatever the TV
          is set to: "12", "24", or "system", the default, which follows the TV. Launcher settings' Clock row overrides
          it, and a theme can set "clock_format": "24". -->
