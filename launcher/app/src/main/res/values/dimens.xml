@@ -7,5 +7,5 @@
     <dimen name="date_top_inset">11dp</dimen>
     <dimen name="clock_optical_inset">-2.5dp</dimen>
     <dimen name="hero_optical_inset">-2dp</dimen>
-    <dimen name="scenery_location_gap">6dp</dimen>
+    <dimen name="scenery_location_gap">-2dp</dimen>
 </resources>
