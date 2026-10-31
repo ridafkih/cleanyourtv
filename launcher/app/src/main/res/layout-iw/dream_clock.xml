@@ -39,7 +39,7 @@
                 android:textSize="22sp"
                 android:fontFamily="@string/font_medium"
                 android:letterSpacing="0.08"
-                android:textAllCaps="true" />
+                android:textAllCaps="false" />
 
             <TextClock
                 android:id="@+id/dreamClock"
@@ -67,6 +67,6 @@
             android:textSize="18sp"
             android:fontFamily="@string/font_regular"
             android:letterSpacing="0.14"
-            android:textAllCaps="true" />
+            android:textAllCaps="false" />
     </LinearLayout>
 </FrameLayout>
