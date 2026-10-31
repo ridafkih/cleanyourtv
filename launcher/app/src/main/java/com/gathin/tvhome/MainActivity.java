@@ -657,6 +657,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         ((GridLayoutManager) grid.getLayoutManager()).setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
             @Override public int getSpanSize(int position) { return !singleRow && adapter != null && adapter.isLibraryAt(position) ? COLUMNS : 1; }
         });
+        if (singleRow) grid.getViewTreeObserver().addOnGlobalFocusChangeListener((oldFocus, newFocus) -> releaseNeighbours(newFocus));
         grid.setHasFixedSize(true);
         grid.setItemAnimator(null);
         // Tiles that scroll out while one is carried come back from the view cache without a rebind; set their
@@ -1795,17 +1796,17 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
 
     @Override
     public void onTileFocusChanged(int position, boolean focused) {
-        if (!singleRow) return;
-        if (focused) {
-            zoomFocusedPosition = position;
-            shiftNeighbours();
-        } else if (zoomFocusedPosition == position) {
-            grid.post(() -> {
-                if (grid.hasFocus()) return;
-                zoomFocusedPosition = RecyclerView.NO_POSITION;
-                shiftNeighbours();
-            });
-        }
+        if (!singleRow || !focused) return;
+        zoomFocusedPosition = position;
+        shiftNeighbours();
+    }
+
+    /** Focus left the row (to a pill, or nowhere): nothing is zoomed, so the neighbours settle back to the plain gap. */
+    private void releaseNeighbours(View newFocus) {
+        if (zoomFocusedPosition == RecyclerView.NO_POSITION) return;
+        if (newFocus != null && grid.findContainingItemView(newFocus) != null) return;
+        zoomFocusedPosition = RecyclerView.NO_POSITION;
+        shiftNeighbours();
     }
 
     @Override
