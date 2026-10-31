@@ -2,5 +2,5 @@
 <resources>
     <dimen name="focus_ring_gap">5dp</dimen>
     <dimen name="screen_gutter">56dp</dimen>
-    <dimen name="tile_gap">24dp</dimen>
+    <dimen name="tile_gap">36dp</dimen>
 </resources>
