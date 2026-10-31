@@ -279,7 +279,7 @@
                             android:textColor="#A6FFFFFF"
                             android:textSize="14sp"
                             android:fontFamily="@string/font_regular"
-                            android:letterSpacing="0.14"
+                            android:letterSpacing="0.02"
                             android:textAllCaps="false" />
 
                         <!-- Lunar date ("Lunar 13/9 · Year of the Horse"), shown when lunar_date is on. -->
@@ -294,7 +294,7 @@
                             android:textColor="#80FFFFFF"
                             android:textSize="14sp"
                             android:fontFamily="@string/font_regular"
-                            android:letterSpacing="0.14"
+                            android:letterSpacing="0.02"
                             android:textAllCaps="false"
                             android:visibility="gone" />
                     </LinearLayout>
