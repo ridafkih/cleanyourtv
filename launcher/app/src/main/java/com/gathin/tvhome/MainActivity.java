@@ -1768,7 +1768,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         Rect r = tileRect;
         r.set(0, 0, card.getWidth(), card.getHeight());
         root.offsetDescendantRectToMyCoords(card, r);
-        float pad = 6f * density;        // matches GlassView's glow inset
+        float gap = getResources().getDimension(R.dimen.focus_ring_gap);
+        float pad = 6f * density + gap;        // GlassView's glow inset plus the gap between ring and tile
         float scale = adapter.focusScale();
         float w = card.getWidth() * scale + 2 * pad;
         float h = card.getHeight() * scale + 2 * pad;
@@ -1782,8 +1783,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             lp.width = (int) w;
             lp.height = (int) h;
             glass.setLayoutParams(lp);
-            // GlassView draws its slab inset by pad, i.e. exactly over the zoomed tile: same corners as the tile.
-            glass.setRadius(AppAdapter.cornerRadius(card.getWidth(), density) * scale);
+            // GlassView draws its slab inset by the glow, so it stands off the zoomed tile by the gap on every side; its radius is the tile's plus the gap, which keeps the two curves concentric.
+            glass.setRadius(AppAdapter.cornerRadius(card.getWidth(), density) * scale + gap);
         }
         glassCardW = card.getWidth();
         glassTargetX = x;
@@ -1844,7 +1845,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         RecyclerView.ViewHolder vh = grid.findViewHolderForAdapterPosition(pos);
         View card = vh == null ? null : vh.itemView.findViewById(R.id.card);
         if (card == null || card.getWidth() <= 0 || !card.isFocused()) return;
-        float pad = 6f * density;
+        float pad = 6f * density + getResources().getDimension(R.dimen.focus_ring_gap);
         float scale = adapter.focusScale();
         int w = (int) (card.getWidth() * scale + 2 * pad);
         int h = (int) (card.getHeight() * scale + 2 * pad);
