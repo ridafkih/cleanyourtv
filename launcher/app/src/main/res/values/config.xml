@@ -31,6 +31,8 @@
     <string-array name="hidden_apps">
         <item>com.mediatek.wwtv.tvcenter</item>
         <item>com.mitv.gallery</item>
+        <item>com.sony.dtv.tvx</item>
+        <item>com.sony.dtv.seeds.iot</item>
     </string-array>
 
     <!-- The TV's Live TV / tuner app, offered at the end of the Inputs menu. Leave empty to omit. -->
