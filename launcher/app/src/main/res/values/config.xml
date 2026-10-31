@@ -300,7 +300,7 @@
     <bool name="single_row">true</bool>
     <!-- With single_row, the band runs behind every app in the row, apps installed later included, instead of
          the dock apps only. Can also be set with "dock_band_all" in a theme. -->
-    <bool name="dock_band_all">false</bool>
+    <bool name="dock_band_all">true</bool>
     <!-- The dock band's padding equals the gap between its tiles on all four sides (as far as the grid's edges leave room),
          so its corners are concentric with the tiles' and the spacing reads even. false (the default) keeps the fixed
          14dp above and below, up to 22dp at the sides and 26dp corners. Can also be set with "dock_even_padding": true in a theme's config.json. -->
