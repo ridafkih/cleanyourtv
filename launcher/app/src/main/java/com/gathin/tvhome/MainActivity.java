@@ -1868,12 +1868,14 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         if (!singleRow || !focused) return;
         zoomFocusedPosition = position;
         shiftNeighbours();
+        AlphaFade.to(heroName, 1f, getResources().getInteger(R.integer.hero_title_fade_ms), null);
     }
 
     /** Focus left the row (to a pill, or nowhere): nothing is zoomed, so the neighbours settle back to the plain gap. */
     private void releaseNeighbours(View newFocus) {
-        if (zoomFocusedPosition == RecyclerView.NO_POSITION) return;
         if (newFocus != null && grid.findContainingItemView(newFocus) != null) return;
+        AlphaFade.to(heroName, 0f, getResources().getInteger(R.integer.hero_title_fade_ms), null);
+        if (zoomFocusedPosition == RecyclerView.NO_POSITION) return;
         zoomFocusedPosition = RecyclerView.NO_POSITION;
         shiftNeighbours();
     }

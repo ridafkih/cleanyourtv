@@ -2,4 +2,5 @@
 <resources>
     <integer name="focus_zoom_ms">180</integer>
     <integer name="pill_focus_ms">160</integer>
+    <integer name="hero_title_fade_ms">200</integer>
 </resources>
