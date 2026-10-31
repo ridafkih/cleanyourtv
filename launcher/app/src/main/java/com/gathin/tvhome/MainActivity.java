@@ -608,12 +608,12 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                                                          @NonNull Rect rect, boolean immediate,
                                                          boolean focusedChildVisible) {
                 if (singleRow) {
-                    // Sideways: the focused cell scrolls in far enough to leave half of the previous cell showing
-                    // at the left edge, so the row always hints that there is more behind it.
-                    // The whole cell, not the card rect passed in: the card is narrower and centred in it.
+                    // Sideways: the focused cell scrolls in until the screen edge cuts the previous tile in half, so the row always hints that there is more behind it.
+                    // The whole cell, not the card rect passed in: the card sits at the cell's start, the gap after it.
                     int left = child.getLeft();
                     int right = child.getRight();
-                    int peekLeft = getPosition(child) > 0 ? child.getWidth() / 2 : getPaddingLeft();
+                    View card = child.findViewById(R.id.card);
+                    int peekLeft = getPosition(child) > 0 ? child.getWidth() - card.getWidth() / 2 : getPaddingLeft();
                     int dx;
                     if (left < peekLeft || right > getWidth() - getPaddingRight()) dx = left - peekLeft;
                     else dx = 0;

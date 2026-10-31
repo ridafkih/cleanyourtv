@@ -19,6 +19,7 @@ import android.graphics.drawable.GradientDrawable;
 import android.net.Uri;
 import android.provider.Settings;
 import android.util.DisplayMetrics;
+import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -98,7 +99,6 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     }
 
     static final float FOCUS_SCALE = 1.30f;
-    static final float SINGLE_ROW_CELL_RATIO = 1.40f;
     /** Design size of a tile (dp); tiles shrink from here when the columns don't fit, see tileWidthPx. */
     static final float DESIGN_W_DP = 180f, DESIGN_H_DP = 101f;
 
@@ -434,7 +434,11 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         }
         name.setLayoutParams(nameLp);
         // A sideways row would stretch a match_parent item across the whole screen: give it a grid column's width.
-        if (singleRow) v.getLayoutParams().width = Math.round(w * SINGLE_ROW_CELL_RATIO);
+        if (singleRow) {
+            v.getLayoutParams().width = w + Math.round(parent.getResources().getDimension(R.dimen.tile_gap));
+            ((FrameLayout.LayoutParams) card.getLayoutParams()).gravity = Gravity.START | Gravity.TOP;
+            ((FrameLayout.LayoutParams) name.getLayoutParams()).gravity = Gravity.START | Gravity.TOP;
+        }
         if (uniformTiles) {
             // tvOS-style tile: a large centred mark, no caption inside the card.
             View icon = v.findViewById(R.id.icon);
