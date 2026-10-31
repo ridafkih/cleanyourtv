@@ -916,9 +916,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             List<View> pills = new ArrayList<>(Arrays.asList(btnInputs, btnWifi, btnVpn, findViewById(R.id.btnPlayStore), btnReorder, btnLibraryTop, btnSettings));
             pills.addAll(topAppButtons);
             for (View button : pills) {
-                button.setOnFocusChangeListener((view, focused) -> view.animate()
-                        .scaleX(focused ? 1.04f : 1f).scaleY(focused ? 1.04f : 1f)
-                        .setDuration(reducedMotion ? Motion.REDUCED_MS : 160).start());
+                button.setOnFocusChangeListener((view, focused) -> ViewTween.scale(view, focused ? 1.04f : 1f,
+                        reducedMotion ? Motion.REDUCED_MS : getResources().getInteger(R.integer.pill_focus_ms)));
             }
         }
         if (festive) applyFestiveSkin((TextView) btnInputs, (TextView) btnSettings);
@@ -1860,8 +1859,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         for (int i = 0; i < grid.getChildCount(); i++) {
             View item = grid.getChildAt(i);
             float target = neighbourShift(grid.getChildAdapterPosition(item), item);
-            item.animate().cancel();
-            if (animations && !reducedMotion) item.animate().translationX(target).setDuration(220).setInterpolator(new DecelerateInterpolator(1.5f)).start();
+            if (animations && !reducedMotion) ViewTween.translationX(item, target, getResources().getInteger(R.integer.focus_zoom_ms));
             else item.setTranslationX(target);
         }
     }

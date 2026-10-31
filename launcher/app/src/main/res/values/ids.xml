@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <item name="alpha_fade_step" type="id" />
+    <item name="scale_tween_step" type="id" />
+    <item name="translation_tween_step" type="id" />
 </resources>

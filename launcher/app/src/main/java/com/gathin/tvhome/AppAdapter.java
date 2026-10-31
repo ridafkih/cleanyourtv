@@ -964,6 +964,7 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 float scale = animations ? FOCUS_SCALE : 1f;
                 float s = focused ? scale : 1f;
                 if (!animations) {
+                    ViewTween.cancelScale(view);
                     view.setScaleX(1f);
                     view.setScaleY(1f);
                     view.setTranslationY(0f);
@@ -975,7 +976,8 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 } else if (reducedMotion) {
                     // A short zoom with no hardware layer: building a layer for so short an animation costs more
                     // frames than it saves. The name just appears instead of fading.
-                    view.animate().scaleX(s).scaleY(s)
+                    ViewTween.scale(view, s, focused ? Motion.REDUCED_MS : 60);
+                    view.animate()
                             .translationY(focused && advancedEffects && !inDock ? -4f * density : 0f)
                             .translationZ(focused && advancedEffects ? 8f * density : 0f)
                             .setDuration(focused ? Motion.REDUCED_MS : 60)
@@ -987,13 +989,13 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                     // Only on focus: snapping it back to -6dp while it fades out would jump it up over the tile.
                     if (focused) name.setTranslationY(density * 4f);
                 } else {
-                    view.animate().scaleX(s).scaleY(s)
+                    ViewTween.scale(view, s, view.getResources().getInteger(R.integer.focus_zoom_ms));
+                    view.animate()
                             .translationY(focused && advancedEffects && !inDock ? -4f * density : 0f)
                             .translationZ(focused && advancedEffects ? 8f * density : 0f)
                             .setDuration(advancedEffects ? (focused ? 220 : 170) : (focused ? 260 : 180))
-                            .setInterpolator(focused && !overshoot ? new DecelerateInterpolator(1.5f)
-                                    : new OvershootInterpolator(focused ? (advancedEffects ? 0.7f : 1.6f) : 0f))
-                            .withLayer().start();
+                            .setInterpolator(new DecelerateInterpolator(1.5f))
+                            .start();
                     if (advancedEffects) {
                         banner.animate().scaleX(focused ? 1.035f : 1f).scaleY(focused ? 1.035f : 1f)
                                 .setDuration(280).start();
