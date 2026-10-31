@@ -141,9 +141,9 @@
     <string name="race_practice_2_short">TL2</string>
     <string name="race_practice_3_short">TL3</string>
     <string name="race_sprint_qualifying_short">CS</string>
-    <string name="race_sprint_short">SPRINT</string>
-    <string name="race_qualifying_short">CLASS</string>
-    <string name="race_race_short">CORRIDA</string>
+    <string name="race_sprint_short">Sprint</string>
+    <string name="race_qualifying_short">Class</string>
+    <string name="race_race_short">Corrida</string>
     <string name="race_countdown_minutes">%1$d min</string>
     <string name="race_countdown_hours">%1$dh %2$dmin</string>
     <string name="race_countdown_days">%1$dd %2$dh</string>

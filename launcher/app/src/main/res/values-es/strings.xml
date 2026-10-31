@@ -138,9 +138,9 @@
     <string name="race_practice_2_short">FP2</string>
     <string name="race_practice_3_short">FP3</string>
     <string name="race_sprint_qualifying_short">SQ</string>
-    <string name="race_sprint_short">SPRINT</string>
-    <string name="race_qualifying_short">QUALI</string>
-    <string name="race_race_short">RACE</string>
+    <string name="race_sprint_short">Sprint</string>
+    <string name="race_qualifying_short">Quali</string>
+    <string name="race_race_short">Race</string>
     <string name="race_countdown_minutes">%1$d min</string>
     <string name="race_countdown_hours">%1$dh %2$dm</string>
     <string name="race_countdown_days">%1$dd %2$dh</string>

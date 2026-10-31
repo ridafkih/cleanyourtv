@@ -116,7 +116,7 @@
     <string name="race_sprint_qualifying">Clasificación sprint</string>
     <string name="race_qualifying">Clasificación</string>
     <string name="race_race">Carrera</string>
-    <string name="race_race_short">CARRERA</string>
+    <string name="race_race_short">Carrera</string>
     <string name="last_opened">Abierta per última vegada %1$s</string>
     <string name="game_live">En direutu</string>
 </resources>

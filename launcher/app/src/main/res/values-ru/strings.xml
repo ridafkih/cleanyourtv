@@ -142,9 +142,9 @@
     <string name="race_practice_2_short">П2</string>
     <string name="race_practice_3_short">П3</string>
     <string name="race_sprint_qualifying_short">СК</string>
-    <string name="race_sprint_short">СПРИНТ</string>
-    <string name="race_qualifying_short">КВАЛ.</string>
-    <string name="race_race_short">ГОНКА</string>
+    <string name="race_sprint_short">Спринт</string>
+    <string name="race_qualifying_short">Квал.</string>
+    <string name="race_race_short">Гонка</string>
     <string name="race_countdown_minutes">%1$d мин</string>
     <string name="race_countdown_hours">%1$d ч %2$d мин</string>
     <string name="race_countdown_days">%1$d д %2$d ч</string>
