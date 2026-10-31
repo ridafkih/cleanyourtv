@@ -493,6 +493,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         getWindow().setBackgroundDrawable(null);
         wallpaperPlayer = new WallpaperPlayer(this, root, cfg);
         scenery = new SceneryBackground(this, root);
+        TextView sceneryLocation = findViewById(R.id.sceneryLocation);
+        scenery.setListener(location -> showSceneryLocation(sceneryLocation, location));
         sky = findViewById(R.id.sky);
         sky.setIntensity(cfg.skyIntensity);
         glass = findViewById(R.id.glass);
@@ -1266,6 +1268,15 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             startPendingSettingsReorder();
             showCardPrompt();
         });
+    }
+
+    private void showSceneryLocation(TextView label, String location) {
+        long fade = getResources().getInteger(R.integer.scenery_crossfade_ms) / 2;
+        label.animate().cancel();
+        label.animate().alpha(0f).setDuration(fade).withEndAction(() -> {
+            label.setText(location);
+            if (!location.isEmpty()) label.animate().alpha(1f).setDuration(fade).start();
+        }).start();
     }
 
     private void restartAmbientTimer() {

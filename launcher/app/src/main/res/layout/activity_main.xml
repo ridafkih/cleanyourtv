@@ -284,6 +284,20 @@
                     </LinearLayout>
                 </LinearLayout>
 
+
+                <TextView
+                    android:id="@+id/sceneryLocation"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/scenery_location_gap"
+                    android:singleLine="true"
+                    android:ellipsize="end"
+                    android:textColor="#D9FFFFFF"
+                    android:textSize="15sp"
+                    android:fontFamily="@string/font_medium"
+                    android:letterSpacing="0.02"
+                    android:includeFontPadding="false"
+                    android:alpha="0" />
             </LinearLayout>
 
             <!-- Shown only when show_stats is on. Outside leftBlock, so the top buttons stay level with the clock

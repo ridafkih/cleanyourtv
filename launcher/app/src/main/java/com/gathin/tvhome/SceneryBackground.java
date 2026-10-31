@@ -14,7 +14,13 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 
+import org.json.JSONObject;
+
 import java.io.File;
+import java.io.FileInputStream;
+import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -37,10 +43,21 @@ final class SceneryBackground {
     private final ExecutorService decoder = Executors.newSingleThreadExecutor();
     private final List<File> queue = new ArrayList<>();
     private final Runnable advance = this::loadNext;
+    private final Map<String, String> locations = new HashMap<>();
+    private Listener listener;
     private Bitmap shown;
     private boolean active;
     private boolean loading;
     private boolean closed;
+
+    interface Listener {
+        /** The picture now fading in; the label is its place, or empty when the manifest has none. */
+        void onScene(String location);
+    }
+
+    void setListener(Listener listener) {
+        this.listener = listener;
+    }
 
     SceneryBackground(Context context, FrameLayout root) {
         Resources res = context.getResources();
@@ -50,6 +67,7 @@ final class SceneryBackground {
         screenWidth = metrics.widthPixels;
         screenHeight = metrics.heightPixels;
         files = WallpaperRotation.images(context.getExternalFilesDir(res.getString(R.string.scenery_directory)));
+        readLocations(context.getExternalFilesDir(res.getString(R.string.scenery_directory)), res.getString(R.string.scenery_locations_file));
         back = layer(context);
         front = layer(context);
         front.setAlpha(0f);
@@ -63,6 +81,20 @@ final class SceneryBackground {
                 Color.argb(res.getInteger(R.integer.scenery_scrim_bottom_alpha), 0, 0, 0)}));
         scrim.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO);
         root.addView(scrim, 2, match());
+    }
+
+    private void readLocations(File directory, String name) {
+        File manifest = new File(directory, name);
+        if (!manifest.isFile()) return;
+        try (FileInputStream in = new FileInputStream(manifest)) {
+            JSONObject json = new JSONObject(new String(in.readAllBytes(), StandardCharsets.UTF_8));
+            for (java.util.Iterator<String> keys = json.keys(); keys.hasNext(); ) {
+                String key = keys.next();
+                locations.put(key, json.getString(key));
+            }
+        } catch (Exception e) {
+            locations.clear();
+        }
     }
 
     boolean hasImages() {
@@ -119,7 +151,7 @@ final class SceneryBackground {
             main.post(() -> {
                 loading = false;
                 if (closed) return;
-                if (bitmap != null) reveal(bitmap);
+                if (bitmap != null) reveal(bitmap, file);
                 if (active) main.postDelayed(advance, bitmap == null ? 0 : intervalMs);
             });
         });
@@ -138,7 +170,8 @@ final class SceneryBackground {
         return BitmapFactory.decodeFile(file.getAbsolutePath(), options);
     }
 
-    private void reveal(Bitmap next) {
+    private void reveal(Bitmap next, File file) {
+        if (listener != null) listener.onScene(locations.getOrDefault(file.getName(), ""));
         Bitmap previous = shown;
         shown = next;
         front.animate().cancel();
