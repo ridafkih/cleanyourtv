@@ -89,6 +89,7 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -147,6 +148,10 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     private RecyclerView grid;
     private FrameLayout root;
     private WallpaperPlayer wallpaperPlayer;
+    private SceneryBackground scenery;
+    private boolean ambientMode;
+    private final Map<View, Float> ambientRestAlpha = new LinkedHashMap<>();
+    private final Runnable enterAmbient = this::enterAmbientMode;
     private GlassView glass;
     private View ambient;
     private TextView heroName;
@@ -487,6 +492,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         // the theme's background, so launch looks the same.
         getWindow().setBackgroundDrawable(null);
         wallpaperPlayer = new WallpaperPlayer(this, root, cfg);
+        scenery = new SceneryBackground(this, root);
         sky = findViewById(R.id.sky);
         sky.setIntensity(cfg.skyIntensity);
         glass = findViewById(R.id.glass);
@@ -496,7 +502,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         // The glow is one bitmap, so its alpha can be applied while drawing it. Otherwise every frame of
         // a fade renders it into a full-screen offscreen buffer first.
         ambient.forceHasOverlappingRendering(false);
-        ambientGlow = cfg.ambientGlow;
+        ambientGlow = cfg.ambientGlow && !scenery.hasImages();
         appGlow = cfg.appGlow;
         if (!ambientGlow) ambient.setVisibility(View.GONE);
         heroName = findViewById(R.id.heroName);
@@ -1109,6 +1115,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         if (gameDay != null) gameDay.start();
         sky.update();
         wallpaperPlayer.start();
+        scenery.start();
+        restartAmbientTimer();
         handler.postDelayed(minuteTick, MINUTE_MS);
         if (festive && lamp != null) {
             lamp.start();
@@ -1260,11 +1268,45 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         });
     }
 
+    private void restartAmbientTimer() {
+        root.removeCallbacks(enterAmbient);
+        if (resumed && scenery.hasImages()) root.postDelayed(enterAmbient, getResources().getInteger(R.integer.idle_ambient_seconds) * 1000L);
+    }
+
+    /** After a quiet spell everything but the clock fades away, leaving the scenery. */
+    private void enterAmbientMode() {
+        if (!resumed || ambientMode || openPopup != null) return;
+        ambientMode = true;
+        long fade = getResources().getInteger(R.integer.ambient_fade_ms);
+        ambientRestAlpha.clear();
+        for (View view : ambientFadedViews()) {
+            ambientRestAlpha.put(view, view.getAlpha());
+            view.animate().cancel();
+            view.animate().alpha(0f).setDuration(fade).start();
+        }
+    }
+
+    private void leaveAmbientMode() {
+        ambientMode = false;
+        long fade = getResources().getInteger(R.integer.ambient_fade_ms);
+        for (Map.Entry<View, Float> rest : ambientRestAlpha.entrySet()) {
+            rest.getKey().animate().cancel();
+            rest.getKey().animate().alpha(rest.getValue()).setDuration(fade).start();
+        }
+        ambientRestAlpha.clear();
+    }
+
+    private List<View> ambientFadedViews() {
+        return Arrays.asList(findViewById(R.id.topButtons), findViewById(R.id.date), (View) grid.getParent(), hero, glass);
+    }
+
     /** Any key on Home restarts the countdown to the idle clock. */
     @Override
     public void onUserInteraction() {
         super.onUserInteraction();
         restartIdleClock();
+        if (ambientMode) leaveAmbientMode();
+        restartAmbientTimer();
     }
 
     private void restartIdleClock() {
@@ -1283,6 +1325,9 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         root.removeCallbacks(showIdleClock);
         endReorder();   // Home or another app while reordering keeps the order so far
         wallpaperPlayer.stop();
+        scenery.stop();
+        root.removeCallbacks(enterAmbient);
+        if (ambientMode) leaveAmbientMode();
         stopAmbientAnimation();
         hero.animate().cancel();
         ambient.animate().cancel();
@@ -1353,6 +1398,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         if (gameDay != null) gameDay.shutdown();
         unregisterReceiver(packageReceiver);
         wallpaperPlayer.close();
+        scenery.close();
         ConnectivityManager cm = getSystemService(ConnectivityManager.class);
         TvInputManager tim = (TvInputManager) getSystemService(TV_INPUT_SERVICE);
         if (tim != null) tim.unregisterCallback(inputCallback);
@@ -1394,6 +1440,13 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
      */
     @Override
     public boolean dispatchKeyEvent(KeyEvent event) {
+        if (ambientMode) {
+            if (event.getAction() == KeyEvent.ACTION_DOWN) {
+                leaveAmbientMode();
+                restartAmbientTimer();
+            }
+            return true;
+        }
         // Vendor keys (TCL Netflix button, 4062) never reach the key services, only the focused window, so their
         // "hold:" entries run here too or nowhere. Only while resumed: onPause releases Home's holds, and a DOWN
         // taken after that would arm one nothing releases.
