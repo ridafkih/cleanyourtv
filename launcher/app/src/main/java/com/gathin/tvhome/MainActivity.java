@@ -631,7 +631,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                     int left = child.getLeft();
                     int right = child.getRight();
                     View card = child.findViewById(R.id.card);
-                    int peekLeft = getPosition(child) > 0 ? child.getWidth() - card.getWidth() / 2 + zoomShiftPx(card.getWidth()) : getPaddingLeft();
+                    int peekLeft = getPosition(child) > 0 ? child.getWidth() - card.getWidth() / 2 : getPaddingLeft();
                     int dx;
                     if (left < peekLeft || right > getWidth() - getPaddingRight()) dx = left - peekLeft;
                     else dx = 0;
@@ -1843,16 +1843,15 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
 
     private int zoomFocusedPosition = RecyclerView.NO_POSITION;
 
-    /** How far each neighbour moves out of the way of the zoomed tile: half of what the tile grows by on each side. */
-    private int zoomShiftPx(int cardWidth) {
-        return animations ? Math.round((AppAdapter.FOCUS_SCALE - 1f) * cardWidth / 2f) : 0;
+    /** What the zoomed tile grows by, all of it to its right: the tiles after it move over by this much. */
+    private int zoomGrowthPx(int cardWidth) {
+        return animations ? Math.round((AppAdapter.FOCUS_SCALE - 1f) * cardWidth) : 0;
     }
 
     private float neighbourShift(int position, View item) {
         if (!singleRow || zoomFocusedPosition == RecyclerView.NO_POSITION || position == RecyclerView.NO_POSITION) return 0f;
         View card = item.findViewById(R.id.card);
-        int shift = zoomShiftPx(card == null ? 0 : card.getWidth());
-        return position < zoomFocusedPosition ? -shift : position > zoomFocusedPosition ? shift : 0f;
+        return position > zoomFocusedPosition ? zoomGrowthPx(card == null ? 0 : card.getWidth()) : 0f;
     }
 
     private void shiftNeighbours() {
@@ -1906,7 +1905,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         root.offsetDescendantRectToMyCoords(grid, gridOrigin);
         View cell = (View) card.getParent();
         float restCenterX = singleRow
-                ? gridOrigin.left + cell.getLeft() + card.getLeft() + card.getWidth() / 2f
+                ? gridOrigin.left + cell.getLeft() + card.getLeft() + card.getWidth() * scale / 2f
                 : r.exactCenterX();
         float x = restCenterX - w / 2f;
         // advanced_effects lifts a focused grid tile by 4dp and the glass follows it; dock tiles stay put (#2135).

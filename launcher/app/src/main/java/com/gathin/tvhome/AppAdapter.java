@@ -425,6 +425,11 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         cardLp.width = w;
         cardLp.height = h;
         card.setLayoutParams(cardLp);
+        // A single row zooms from its left edge, so the leading tile never grows past the gutter.
+        if (singleRow) {
+            card.setPivotX(0f);
+            card.setPivotY(h / 2f);
+        }
         View name = v.findViewById(R.id.name);
         ViewGroup.MarginLayoutParams nameLp = (ViewGroup.MarginLayoutParams) name.getLayoutParams();
         nameLp.width = w;
