@@ -374,6 +374,13 @@
                     android:nextFocusDown="@+id/grid" />
 
                 <TextView
+                    android:id="@+id/btnPlayStore"
+                    style="@style/TopButtonIcon"
+                    android:contentDescription="@string/play_store"
+                    android:drawableStart="@drawable/ic_play"
+                    android:nextFocusDown="@+id/grid" />
+
+                <TextView
                     android:id="@+id/btnReorder"
                     style="@style/TopButtonIcon"
                     android:contentDescription="@string/reorder"

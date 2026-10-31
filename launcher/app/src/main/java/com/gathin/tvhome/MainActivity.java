@@ -813,6 +813,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         btnInputs.setOnClickListener(v -> showInputs());
         btnWifi.setOnClickListener(v -> openNetworkPill());
         btnVpn.setOnClickListener(v -> openVpnPill());
+        setUpPlayStorePill();
         btnWifi.setOnLongClickListener(v -> {
             open(systemIntent(Settings.ACTION_WIFI_SETTINGS));
             return true;
@@ -906,12 +907,13 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         btnInputs.setOnKeyListener(pillKeys);
         btnWifi.setOnKeyListener(pillKeys);
         btnVpn.setOnKeyListener(pillKeys);
+        findViewById(R.id.btnPlayStore).setOnKeyListener(pillKeys);
         btnSettings.setOnKeyListener(pillKeys);
         btnReorder.setOnKeyListener(pillKeys);
         btnLibraryTop.setOnKeyListener(pillKeys);
         for (View button : topAppButtons) button.setOnKeyListener(pillKeys);
         if (advancedEffects) {
-            List<View> pills = new ArrayList<>(Arrays.asList(btnInputs, btnWifi, btnVpn, btnReorder, btnLibraryTop, btnSettings));
+            List<View> pills = new ArrayList<>(Arrays.asList(btnInputs, btnWifi, btnVpn, findViewById(R.id.btnPlayStore), btnReorder, btnLibraryTop, btnSettings));
             pills.addAll(topAppButtons);
             for (View button : pills) {
                 button.setOnFocusChangeListener((view, focused) -> view.animate()
@@ -1268,6 +1270,20 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             startPendingSettingsReorder();
             showCardPrompt();
         });
+    }
+
+    /** The Play Store as its own monochrome pill after the VPN pill; hidden when the TV has no such app. */
+    private void setUpPlayStorePill() {
+        View pill = findViewById(R.id.btnPlayStore);
+        String pkg = getString(R.string.play_store_pill_app);
+        Intent launch = getPackageManager().getLeanbackLaunchIntentForPackage(pkg);
+        if (launch == null) launch = getPackageManager().getLaunchIntentForPackage(pkg);
+        if (launch == null) {
+            pill.setVisibility(View.GONE);
+            return;
+        }
+        Intent target = launch;
+        pill.setOnClickListener(v -> open(new Intent(target)));
     }
 
     private void showSceneryLocation(TextView label, String location) {
