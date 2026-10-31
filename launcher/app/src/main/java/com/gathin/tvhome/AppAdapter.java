@@ -54,6 +54,9 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     interface TileListener {
         void onTileFocused(int position, View card);
 
+        /** A tile gained or lost focus: the row shifts its neighbours so the zoom keeps every gap constant. */
+        void onTileFocusChanged(int position, boolean focused);
+
         /** Called for a D-pad direction key on a tile. Return true when handled (focus stays put). */
         boolean onTileVerticalKey(int position, int keyCode);
 
@@ -1000,6 +1003,7 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                             .setDuration(220).start();
                 }
                 int pos = getBindingAdapterPosition();
+                if (listener != null && pos != RecyclerView.NO_POSITION) listener.onTileFocusChanged(pos, focused);
                 if (focused && listener != null && pos != RecyclerView.NO_POSITION) {
                     listener.onTileFocused(pos, view);
                 }

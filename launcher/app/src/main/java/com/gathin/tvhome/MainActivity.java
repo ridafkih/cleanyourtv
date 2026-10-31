@@ -61,6 +61,7 @@ import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.view.Window;
 import android.view.animation.AnimationUtils;
+import android.view.animation.DecelerateInterpolator;
 import android.view.animation.LayoutAnimationController;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -613,7 +614,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                     int left = child.getLeft();
                     int right = child.getRight();
                     View card = child.findViewById(R.id.card);
-                    int peekLeft = getPosition(child) > 0 ? child.getWidth() - card.getWidth() / 2 : getPaddingLeft();
+                    int peekLeft = getPosition(child) > 0 ? child.getWidth() - card.getWidth() / 2 + zoomShiftPx(card.getWidth()) : getPaddingLeft();
                     int dx;
                     if (left < peekLeft || right > getWidth() - getPaddingRight()) dx = left - peekLeft;
                     else dx = 0;
@@ -649,7 +650,9 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         grid.addOnChildAttachStateChangeListener(new RecyclerView.OnChildAttachStateChangeListener() {
             @Override
             public void onChildViewAttachedToWindow(@NonNull View v) {
-                v.setAlpha(tileAlpha(grid.getChildAdapterPosition(v)));
+                int position = grid.getChildAdapterPosition(v);
+                v.setAlpha(tileAlpha(position));
+                v.setTranslationX(neighbourShift(position, v));
             }
 
             @Override
@@ -1750,6 +1753,45 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         }, libraryExcludedApps);
         openPopup = appLibrary.popup;
         appLibrary.show();
+    }
+
+    private int zoomFocusedPosition = RecyclerView.NO_POSITION;
+
+    /** How far each neighbour moves out of the way of the zoomed tile: half of what the tile grows by on each side. */
+    private int zoomShiftPx(int cardWidth) {
+        return animations ? Math.round((AppAdapter.FOCUS_SCALE - 1f) * cardWidth / 2f) : 0;
+    }
+
+    private float neighbourShift(int position, View item) {
+        if (!singleRow || zoomFocusedPosition == RecyclerView.NO_POSITION || position == RecyclerView.NO_POSITION) return 0f;
+        View card = item.findViewById(R.id.card);
+        int shift = zoomShiftPx(card == null ? 0 : card.getWidth());
+        return position < zoomFocusedPosition ? -shift : position > zoomFocusedPosition ? shift : 0f;
+    }
+
+    private void shiftNeighbours() {
+        for (int i = 0; i < grid.getChildCount(); i++) {
+            View item = grid.getChildAt(i);
+            float target = neighbourShift(grid.getChildAdapterPosition(item), item);
+            item.animate().cancel();
+            if (animations && !reducedMotion) item.animate().translationX(target).setDuration(220).setInterpolator(new DecelerateInterpolator(1.5f)).start();
+            else item.setTranslationX(target);
+        }
+    }
+
+    @Override
+    public void onTileFocusChanged(int position, boolean focused) {
+        if (!singleRow) return;
+        if (focused) {
+            zoomFocusedPosition = position;
+            shiftNeighbours();
+        } else if (zoomFocusedPosition == position) {
+            grid.post(() -> {
+                if (grid.hasFocus()) return;
+                zoomFocusedPosition = RecyclerView.NO_POSITION;
+                shiftNeighbours();
+            });
+        }
     }
 
     @Override
