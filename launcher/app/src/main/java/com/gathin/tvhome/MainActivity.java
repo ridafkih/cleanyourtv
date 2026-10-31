@@ -532,11 +532,6 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         clockBlock = findViewById(R.id.leftBlock);
         greetingColor = greeting.getCurrentTextColor();
         if (!cfg.showGreeting) greeting.setVisibility(View.GONE);
-        // Keep the other header layouts as designed: their extra lines change the block's centre.
-        if (!cfg.showGreeting && !cfg.dateBelowClock && !cfg.shamsiDate && !cfg.lunarDate
-                && !cfg.topMenu && !getResources().getBoolean(R.bool.rtl_menu_bar)) {
-            centerCompactHeader();
-        }
         if (cfg.headerWhite) {
             // The clock's own white for the date and the line before it, instead of their dimmed whites.
             ((TextView) findViewById(R.id.date)).setTextColor(Color.WHITE);
@@ -2525,26 +2520,6 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             textLp.gravity = ((TextView) text).getGravity() & Gravity.HORIZONTAL_GRAVITY_MASK;
             text.setLayoutParams(textLp);
         }
-    }
-
-    /** Centre the one-row header when the greeting and extra date lines are absent (#2265). */
-    private void centerCompactHeader() {
-        LinearLayout clockRow = (LinearLayout) findViewById(R.id.clock).getParent();
-        clockRow.setGravity(Gravity.CENTER_VERTICAL);
-        clockRow.setBaselineAligned(false);
-        View[] columns = {findViewById(R.id.clockDivider), (View) findViewById(R.id.date).getParent()};
-        for (View column : columns) {
-            LinearLayout.LayoutParams lp = (LinearLayout.LayoutParams) column.getLayoutParams();
-            lp.gravity = Gravity.CENTER_VERTICAL;
-            lp.bottomMargin = 0;
-            column.setLayoutParams(lp);
-        }
-        LinearLayout buttons = findViewById(R.id.topButtons);
-        RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams) buttons.getLayoutParams();
-        lp.addRule(RelativeLayout.ALIGN_TOP, R.id.leftBlock);
-        lp.bottomMargin = 0;
-        buttons.setLayoutParams(lp);
-        buttons.setGravity(Gravity.CENTER_VERTICAL);
     }
 
     /** With the date below, keep the icons beside the clock rather than beside the last date line. */
