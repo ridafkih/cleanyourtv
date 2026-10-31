@@ -174,18 +174,18 @@ final class SceneryBackground {
         if (listener != null) listener.onScene(locations.getOrDefault(file.getName(), ""));
         Bitmap previous = shown;
         shown = next;
-        front.animate().cancel();
+        AlphaFade.cancel(front);
         front.setImageBitmap(next);
         if (previous == null) {
             back.setImageBitmap(next);
             return;
         }
         front.setAlpha(0f);
-        front.animate().alpha(1f).setDuration(crossfadeMs).withEndAction(() -> {
+        AlphaFade.to(front, 1f, crossfadeMs, () -> {
             back.setImageBitmap(next);
             front.setAlpha(0f);
             front.setImageDrawable(null);
             previous.recycle();
-        }).start();
+        });
     }
 }

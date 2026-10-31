@@ -1288,11 +1288,10 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
 
     private void showSceneryLocation(TextView label, String location) {
         long fade = getResources().getInteger(R.integer.scenery_crossfade_ms) / 2;
-        label.animate().cancel();
-        label.animate().alpha(0f).setDuration(fade).withEndAction(() -> {
+        AlphaFade.to(label, 0f, fade, () -> {
             label.setText(location);
-            if (!location.isEmpty()) label.animate().alpha(1f).setDuration(fade).start();
-        }).start();
+            if (!location.isEmpty()) AlphaFade.to(label, 1f, fade, null);
+        });
     }
 
     private void restartAmbientTimer() {
@@ -1308,8 +1307,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         ambientRestAlpha.clear();
         for (View view : ambientFadedViews()) {
             ambientRestAlpha.put(view, view.getAlpha());
-            view.animate().cancel();
-            view.animate().alpha(0f).setDuration(fade).start();
+            AlphaFade.to(view, 0f, fade, null);
         }
     }
 
@@ -1317,8 +1315,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         ambientMode = false;
         long fade = getResources().getInteger(R.integer.ambient_fade_ms);
         for (Map.Entry<View, Float> rest : ambientRestAlpha.entrySet()) {
-            rest.getKey().animate().cancel();
-            rest.getKey().animate().alpha(rest.getValue()).setDuration(fade).start();
+            AlphaFade.to(rest.getKey(), rest.getValue(), fade, null);
         }
         ambientRestAlpha.clear();
     }
