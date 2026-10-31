@@ -3,6 +3,6 @@
     <dimen name="focus_ring_gap">5dp</dimen>
     <dimen name="screen_gutter">56dp</dimen>
     <dimen name="tile_gap">14dp</dimen>
-    <dimen name="header_gap">24dp</dimen>
+    <dimen name="header_gap">18dp</dimen>
     <dimen name="date_top_inset">11dp</dimen>
 </resources>
