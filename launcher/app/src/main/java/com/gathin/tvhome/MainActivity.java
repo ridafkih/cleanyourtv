@@ -47,10 +47,12 @@ import android.os.HandlerThread;
 import android.os.Looper;
 import android.os.SystemClock;
 import android.provider.Settings;
+import android.text.Editable;
 import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.TextPaint;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.text.style.ForegroundColorSpan;
 import android.util.TypedValue;
 import android.view.Gravity;
@@ -514,6 +516,18 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         // dock_title false: the name above the dock (and the cinematic lines under it) never shows; the glow
         // still follows the dock.
         if (!cfg.dockTitle) hero.setVisibility(View.GONE);
+        TextView ampm = findViewById(R.id.ampm);
+        ampm.addTextChangedListener(new TextWatcher() {
+            @Override public void beforeTextChanged(CharSequence text, int start, int count, int after) { }
+            @Override public void onTextChanged(CharSequence text, int start, int before, int count) { }
+
+            @Override
+            public void afterTextChanged(Editable text) {
+                String marker = text.toString();
+                String plain = marker.replace(".", "").toUpperCase(Locale.ROOT);
+                if (!plain.equals(marker)) text.replace(0, text.length(), plain);
+            }
+        });
         greeting = findViewById(R.id.greeting);
         clockBlock = findViewById(R.id.leftBlock);
         greetingColor = greeting.getCurrentTextColor();
@@ -1815,7 +1829,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         float scale = adapter.focusScale();
         float w = card.getWidth() * scale + 2 * pad;
         float h = card.getHeight() * scale + 2 * pad;
-        float x = r.exactCenterX() - w / 2f;
+        // The neighbour shift is still settling on this tile's item; the ring goes where the tile will rest.
+        float x = r.exactCenterX() - ((View) card.getParent()).getTranslationX() - w / 2f;
         // advanced_effects lifts a focused grid tile by 4dp and the glass follows it; dock tiles stay put (#2135).
         boolean lifted = advancedEffects && !DockSlots.inDockRow(dockRow, singleRow, position, COLUMNS);
         float y = r.exactCenterY() - h / 2f - (lifted ? 4f * density : 0f);
