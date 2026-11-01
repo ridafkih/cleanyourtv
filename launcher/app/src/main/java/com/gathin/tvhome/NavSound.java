@@ -85,7 +85,7 @@ final class NavSound {
                 .setUsage(AudioAttributes.USAGE_ASSISTANCE_SONIFICATION)
                 .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION).build()).build();
         focusId = pool.load(activity, R.raw.cue_tap, 1);
-        selectId = pool.load(activity, R.raw.cue_open, 1);
+        selectId = pool.load(activity, R.raw.cue_select, 1);
         focusListener = (oldFocus, newFocus) -> {
             if (oldFocus != null && newFocus != null) pool.play(focusId, focusVolume, focusVolume, 1, 0, 1f);
         };
