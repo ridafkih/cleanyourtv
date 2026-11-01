@@ -1,0 +1,9 @@
+{
+  "name": "render-cuelume-cues",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "node-web-audio-api": "^1.0.0",
+    "cuelume": "0.2.8"
+  }
+}
