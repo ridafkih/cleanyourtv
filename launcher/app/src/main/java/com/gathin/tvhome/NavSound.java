@@ -24,7 +24,9 @@ final class NavSound {
 
     private final boolean systemSounds;
     private final boolean custom;
-    private final float volume;
+    private final float focusVolume;
+    private final float selectVolume;
+    private final long selectMs;
     private final SoundPool pool;
     private final int focusId;
     private final int selectId;
@@ -50,14 +52,14 @@ final class NavSound {
         Settings.System.putInt(context.getContentResolver(), Settings.System.SOUND_EFFECTS_ENABLED, 0);
     }
 
-    static float volume(Context context) {
+    static float volume(Context context, int resource, String key) {
         TypedValue value = new TypedValue();
-        context.getResources().getValue(R.dimen.nav_sound_volume, value, true);
+        context.getResources().getValue(resource, value, true);
         float volume = value.getFloat();
         JSONObject overlay = Config.overlay(context);
-        if (overlay != null && overlay.has("nav_sound_volume")) volume = (float) overlay.optDouble("nav_sound_volume", Double.NaN);
+        if (overlay != null && overlay.has(key)) volume = (float) overlay.optDouble(key, Double.NaN);
         if (!(volume >= 0f && volume <= 1f)) {
-            throw new IllegalStateException("nav_sound_volume must be between 0 and 1, not " + volume);
+            throw new IllegalStateException(key + " must be between 0 and 1, not " + volume);
         }
         return volume;
     }
@@ -66,7 +68,9 @@ final class NavSound {
         String mode = activity.getString(R.string.nav_sound);
         systemSounds = systemSoundsEnabled(activity);
         custom = CUSTOM.equals(mode);
-        volume = custom ? volume(activity) : 0f;
+        focusVolume = custom ? volume(activity, R.dimen.nav_sound_volume, "nav_sound_volume") : 0f;
+        selectVolume = custom ? volume(activity, R.dimen.nav_sound_select_volume, "nav_sound_select_volume") : 0f;
+        selectMs = custom ? activity.getResources().getInteger(R.integer.nav_sound_select_ms) : 0;
         muteSystemSounds(activity);
         decor = activity.getWindow().getDecorView();
         if (!systemSounds) silenceTree(decor);
@@ -81,9 +85,9 @@ final class NavSound {
                 .setUsage(AudioAttributes.USAGE_ASSISTANCE_SONIFICATION)
                 .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION).build()).build();
         focusId = pool.load(activity, R.raw.cue_tap, 1);
-        selectId = pool.load(activity, R.raw.cue_select, 1);
+        selectId = pool.load(activity, R.raw.cue_open, 1);
         focusListener = (oldFocus, newFocus) -> {
-            if (oldFocus != null && newFocus != null) pool.play(focusId, volume, volume, 1, 0, 1f);
+            if (oldFocus != null && newFocus != null) pool.play(focusId, focusVolume, focusVolume, 1, 0, 1f);
         };
         decor.getViewTreeObserver().addOnGlobalFocusChangeListener(focusListener);
     }
@@ -94,7 +98,11 @@ final class NavSound {
     }
 
     void select() {
-        if (pool != null) pool.play(selectId, volume, volume, 1, 0, 1f);
+        if (pool != null) pool.play(selectId, selectVolume, selectVolume, 1, 0, 1f);
+    }
+
+    long selectSoundMs() {
+        return selectMs;
     }
 
     void release() {
