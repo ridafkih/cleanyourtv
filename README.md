@@ -519,7 +519,6 @@ The people whose work is in this repo:
 MIT, see [`LICENSE`](LICENSE). The Outfit typeface is under the SIL Open Font License, see
 `launcher/FONT-LICENSE-OFL.txt`.
 
-The focus and select sounds (`launcher/app/src/main/res/raw/cue_tap.wav` and `cue_select.wav`) are the `tap` and
-`select` cues (select at strong emphasis) from [cuelume](https://cuelume.dev) by Daniel Belyi, MIT licensed, rendered offline with
-`tools/render-cuelume-cues`. `nav_sound` in `config.xml` picks silent (`off`), Android's own click (`default`) or
-these cues (`custom`).
+The focus and click sounds are the `tap` cue from [cuelume](https://cuelume.dev) by Daniel Belyi, MIT licensed
+(`launcher/app/src/main/res/raw/cue_tap.wav`, rendered offline with `tools/render-cuelume-cues`); the click plays it
+pitched up. `nav_sound` in `config.xml` picks silent (`off`), Android's own click (`default`) or this cue (`custom`).

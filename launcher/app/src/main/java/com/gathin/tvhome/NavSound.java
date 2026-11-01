@@ -5,6 +5,7 @@ import android.content.Context;
 import android.media.AudioAttributes;
 import android.media.SoundPool;
 import android.provider.Settings;
+import android.util.Log;
 import android.util.TypedValue;
 
 import org.json.JSONObject;
@@ -21,15 +22,18 @@ final class NavSound {
     private static final String OFF = "off";
     private static final String DEFAULT = "default";
     private static final String CUSTOM = "custom";
+    private static final String TAG = "NavSound";
+    private static final float MIN_RATE = 0.5f;
+    private static final float MAX_RATE = 2f;
 
     private final boolean systemSounds;
     private final boolean custom;
     private final float focusVolume;
     private final float selectVolume;
+    private final float selectPitch;
     private final long selectMs;
     private final SoundPool pool;
     private final int focusId;
-    private final int selectId;
     private final ViewTreeObserver.OnGlobalFocusChangeListener focusListener;
     private final View decor;
 
@@ -52,24 +56,25 @@ final class NavSound {
         Settings.System.putInt(context.getContentResolver(), Settings.System.SOUND_EFFECTS_ENABLED, 0);
     }
 
-    static float volume(Context context, int resource, String key) {
+    static float setting(Context context, int resource, String key, float min, float max) {
         TypedValue value = new TypedValue();
         context.getResources().getValue(resource, value, true);
-        float volume = value.getFloat();
+        float result = value.getFloat();
         JSONObject overlay = Config.overlay(context);
-        if (overlay != null && overlay.has(key)) volume = (float) overlay.optDouble(key, Double.NaN);
-        if (!(volume >= 0f && volume <= 1f)) {
-            throw new IllegalStateException(key + " must be between 0 and 1, not " + volume);
+        if (overlay != null && overlay.has(key)) result = (float) overlay.optDouble(key, Double.NaN);
+        if (!(result >= min && result <= max)) {
+            throw new IllegalStateException(key + " must be between " + min + " and " + max + ", not " + result);
         }
-        return volume;
+        return result;
     }
 
     NavSound(Activity activity) {
         String mode = activity.getString(R.string.nav_sound);
         systemSounds = systemSoundsEnabled(activity);
         custom = CUSTOM.equals(mode);
-        focusVolume = custom ? volume(activity, R.dimen.nav_sound_volume, "nav_sound_volume") : 0f;
-        selectVolume = custom ? volume(activity, R.dimen.nav_sound_select_volume, "nav_sound_select_volume") : 0f;
+        focusVolume = custom ? setting(activity, R.dimen.nav_sound_volume, "nav_sound_volume", 0f, 1f) : 0f;
+        selectVolume = custom ? setting(activity, R.dimen.nav_sound_select_volume, "nav_sound_select_volume", 0f, 1f) : 0f;
+        selectPitch = custom ? setting(activity, R.dimen.nav_sound_select_pitch, "nav_sound_select_pitch", MIN_RATE, MAX_RATE) : 1f;
         selectMs = custom ? activity.getResources().getInteger(R.integer.nav_sound_select_ms) : 0;
         muteSystemSounds(activity);
         decor = activity.getWindow().getDecorView();
@@ -77,7 +82,6 @@ final class NavSound {
         if (!custom) {
             pool = null;
             focusId = 0;
-            selectId = 0;
             focusListener = null;
             return;
         }
@@ -85,7 +89,6 @@ final class NavSound {
                 .setUsage(AudioAttributes.USAGE_ASSISTANCE_SONIFICATION)
                 .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION).build()).build();
         focusId = pool.load(activity, R.raw.cue_tap, 1);
-        selectId = pool.load(activity, R.raw.cue_select, 1);
         focusListener = (oldFocus, newFocus) -> {
             if (oldFocus != null && newFocus != null) pool.play(focusId, focusVolume, focusVolume, 1, 0, 1f);
         };
@@ -98,7 +101,9 @@ final class NavSound {
     }
 
     void select() {
-        if (pool != null) pool.play(selectId, selectVolume, selectVolume, 1, 0, 1f);
+        if (pool == null) return;
+        Log.d(TAG, "select plays cue_tap at rate " + selectPitch + ", volume " + selectVolume);
+        pool.play(focusId, selectVolume, selectVolume, 1, 0, selectPitch);
     }
 
     long selectSoundMs() {
