@@ -779,6 +779,12 @@ final class Config {
      * start before the card is mounted (seen at every boot on a Xiaomi MiTV-MTEQ0), and without the copy it comes
      * up with the built-in dock order. A missing file on mounted storage still means no overlay.
      */
+    static JSONObject overlay(Context ctx) {
+        File dir = dir(ctx);
+        File file = dir != null ? new File(dir, FILE_NAME) : null;
+        return readOverlay(ctx, file, Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState()));
+    }
+
     private static JSONObject readOverlay(Context ctx, File file, boolean mounted) {
         File copy = new File(ctx.getFilesDir(), FILE_NAME);
         if (!mounted) return read(copy);

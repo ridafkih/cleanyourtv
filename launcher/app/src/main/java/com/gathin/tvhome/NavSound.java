@@ -5,6 +5,9 @@ import android.content.Context;
 import android.media.AudioAttributes;
 import android.media.SoundPool;
 import android.provider.Settings;
+import android.util.TypedValue;
+
+import org.json.JSONObject;
 import android.view.SoundEffectConstants;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,6 +24,7 @@ final class NavSound {
 
     private final boolean systemSounds;
     private final boolean custom;
+    private final float volume;
     private final SoundPool pool;
     private final int focusId;
     private final int selectId;
@@ -46,10 +50,23 @@ final class NavSound {
         Settings.System.putInt(context.getContentResolver(), Settings.System.SOUND_EFFECTS_ENABLED, 0);
     }
 
+    static float volume(Context context) {
+        TypedValue value = new TypedValue();
+        context.getResources().getValue(R.dimen.nav_sound_volume, value, true);
+        float volume = value.getFloat();
+        JSONObject overlay = Config.overlay(context);
+        if (overlay != null && overlay.has("nav_sound_volume")) volume = (float) overlay.optDouble("nav_sound_volume", Double.NaN);
+        if (!(volume >= 0f && volume <= 1f)) {
+            throw new IllegalStateException("nav_sound_volume must be between 0 and 1, not " + volume);
+        }
+        return volume;
+    }
+
     NavSound(Activity activity) {
         String mode = activity.getString(R.string.nav_sound);
         systemSounds = systemSoundsEnabled(activity);
         custom = CUSTOM.equals(mode);
+        volume = custom ? volume(activity) : 0f;
         muteSystemSounds(activity);
         decor = activity.getWindow().getDecorView();
         if (!systemSounds) silenceTree(decor);
@@ -66,7 +83,7 @@ final class NavSound {
         focusId = pool.load(activity, R.raw.cue_tap, 1);
         selectId = pool.load(activity, R.raw.cue_select, 1);
         focusListener = (oldFocus, newFocus) -> {
-            if (oldFocus != null && newFocus != null) pool.play(focusId, 1f, 1f, 1, 0, 1f);
+            if (oldFocus != null && newFocus != null) pool.play(focusId, volume, volume, 1, 0, 1f);
         };
         decor.getViewTreeObserver().addOnGlobalFocusChangeListener(focusListener);
     }
@@ -77,7 +94,7 @@ final class NavSound {
     }
 
     void select() {
-        if (pool != null) pool.play(selectId, 1f, 1f, 1, 0, 1f);
+        if (pool != null) pool.play(selectId, volume, volume, 1, 0, 1f);
     }
 
     void release() {
