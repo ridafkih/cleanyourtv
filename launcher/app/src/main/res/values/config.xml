@@ -523,17 +523,14 @@
          keeps its own glow. Can also be set with "glow_style": "horizon" in a theme's config.json. -->
     <string name="glow_style" translatable="false">radial</string>
     <!-- The sound for focus moving and for selecting: off (silent), default (Android's own click) or custom (the
-         cuelume tap cue bundled as raw/cue_tap). -->
+         cuelume cues bundled as raw/cue_tap and raw/cue_select). -->
     <string name="nav_sound" translatable="false">custom</string>
     <!-- How loud the custom cues play, from 0 (silent) to 1 (as bundled). Can also be set with "nav_sound_volume" in a
          theme's config.json, which needs no rebuild. -->
     <item name="nav_sound_volume" type="dimen" format="float">0.3</item>
-    <!-- The same for the click that opens an app, which is the same tap cue pitched up. Can also be
+    <!-- The same for the click that opens an app, which is the cuelume select cue rendered at strong emphasis, a little fuller than the focus tap. Can also be
          set with "nav_sound_select_volume" in a theme's config.json. -->
     <item name="nav_sound_select_volume" type="dimen" format="float">0.6</item>
-    <!-- How far the click's tap is pitched up: 1 is the focus tap's own pitch, 2 an octave higher (0.5 to 2). Can also be
-         set with "nav_sound_select_pitch" in a theme's config.json. -->
-    <item name="nav_sound_select_pitch" type="dimen" format="float">1.4</item>
     <!-- How long the custom click plays before the app opens, so the sound is heard before the screen changes. -->
     <integer name="nav_sound_select_ms">140</integer>
     <!-- With nav_sound off: also turn off Android's system-wide UI sound effects. TV firmware plays the focus click from
