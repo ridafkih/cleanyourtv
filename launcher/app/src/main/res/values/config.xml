@@ -525,6 +525,10 @@
     <!-- The sound for focus moving and for clicks: off (silent), default (Android's own click) or custom (the short
          click bundled as raw/nav_click). -->
     <string name="nav_sound" translatable="false">off</string>
+    <!-- With nav_sound off: also turn off Android's system-wide UI sound effects. TV firmware plays the focus click from
+         the system itself, which no view setting reaches. Needs the Modify system settings permission:
+         adb shell appops set com.gathin.tvhome WRITE_SETTINGS allow -->
+    <bool name="mute_system_sound_effects">true</bool>
 
     <!-- The focus highlight's look: glass (the default: a translucent slab with a bright top sheen, a crisp rim and a
          faint outer glow), rim (the crisp rim alone, no sheen, fill or glow, for a quiet focus over a wallpaper) or

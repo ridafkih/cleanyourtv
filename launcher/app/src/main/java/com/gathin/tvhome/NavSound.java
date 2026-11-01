@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.media.AudioAttributes;
 import android.media.SoundPool;
+import android.provider.Settings;
 import android.view.SoundEffectConstants;
 import android.view.View;
 import android.view.ViewGroup;
@@ -38,10 +39,17 @@ final class NavSound {
         silenceTree(root);
     }
 
+    static void muteSystemSounds(Context context) {
+        if (systemSoundsEnabled(context) || !context.getResources().getBoolean(R.bool.mute_system_sound_effects)) return;
+        if (!Settings.System.canWrite(context)) return;
+        Settings.System.putInt(context.getContentResolver(), Settings.System.SOUND_EFFECTS_ENABLED, 0);
+    }
+
     NavSound(Activity activity) {
         String mode = activity.getString(R.string.nav_sound);
         systemSounds = systemSoundsEnabled(activity);
         custom = CUSTOM.equals(mode);
+        muteSystemSounds(activity);
         decor = activity.getWindow().getDecorView();
         if (!systemSounds) silenceTree(decor);
         if (!custom) {
