@@ -1870,6 +1870,11 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     }
 
     @Override
+    public void onTileSelected() {
+        navSound.select();
+    }
+
+    @Override
     public void onTileFocusChanged(int position, boolean focused) {
         if (!singleRow || !focused) return;
         zoomFocusedPosition = position;
@@ -3351,6 +3356,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     }
 
     private void open(Intent i) {
+        navSound.select();
         i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         try {
             startActivity(i);

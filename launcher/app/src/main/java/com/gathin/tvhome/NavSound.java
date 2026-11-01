@@ -12,7 +12,7 @@ import android.view.ViewTreeObserver;
 
 /**
  * The sound that plays when focus moves or something is clicked. nav_sound in config.xml picks it: off (silent, the
- * default), default (Android's own click) or custom (the bundled raw/nav_click).
+ * default), default (Android's own click) or custom (the bundled cuelume cues).
  */
 final class NavSound {
     private static final String OFF = "off";
@@ -22,7 +22,8 @@ final class NavSound {
     private final boolean systemSounds;
     private final boolean custom;
     private final SoundPool pool;
-    private final int clickId;
+    private final int focusId;
+    private final int selectId;
     private final ViewTreeObserver.OnGlobalFocusChangeListener focusListener;
     private final View decor;
 
@@ -54,16 +55,18 @@ final class NavSound {
         if (!systemSounds) silenceTree(decor);
         if (!custom) {
             pool = null;
-            clickId = 0;
+            focusId = 0;
+            selectId = 0;
             focusListener = null;
             return;
         }
         pool = new SoundPool.Builder().setMaxStreams(2).setAudioAttributes(new AudioAttributes.Builder()
                 .setUsage(AudioAttributes.USAGE_ASSISTANCE_SONIFICATION)
                 .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION).build()).build();
-        clickId = pool.load(activity, R.raw.nav_click, 1);
+        focusId = pool.load(activity, R.raw.cue_tap, 1);
+        selectId = pool.load(activity, R.raw.cue_select, 1);
         focusListener = (oldFocus, newFocus) -> {
-            if (oldFocus != null && newFocus != null) pool.play(clickId, 1f, 1f, 1, 0, 1f);
+            if (oldFocus != null && newFocus != null) pool.play(focusId, 1f, 1f, 1, 0, 1f);
         };
         decor.getViewTreeObserver().addOnGlobalFocusChangeListener(focusListener);
     }
@@ -71,6 +74,10 @@ final class NavSound {
     void vertical(View view, boolean up) {
         if (!systemSounds) return;
         view.playSoundEffect(up ? SoundEffectConstants.NAVIGATION_UP : SoundEffectConstants.NAVIGATION_DOWN);
+    }
+
+    void select() {
+        if (pool != null) pool.play(selectId, 1f, 1f, 1, 0, 1f);
     }
 
     void release() {

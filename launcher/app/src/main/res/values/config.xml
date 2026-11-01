@@ -522,9 +522,9 @@
          colour washes down from the top edge and fades to black, brightest along the top). The cinematic shelf
          keeps its own glow. Can also be set with "glow_style": "horizon" in a theme's config.json. -->
     <string name="glow_style" translatable="false">radial</string>
-    <!-- The sound for focus moving and for clicks: off (silent), default (Android's own click) or custom (the short
-         click bundled as raw/nav_click). -->
-    <string name="nav_sound" translatable="false">off</string>
+    <!-- The sound for focus moving and for selecting: off (silent), default (Android's own click) or custom (the
+         cuelume cues bundled as raw/cue_tap and raw/cue_select). -->
+    <string name="nav_sound" translatable="false">custom</string>
     <!-- With nav_sound off: also turn off Android's system-wide UI sound effects. TV firmware plays the focus click from
          the system itself, which no view setting reaches. Needs the Modify system settings permission:
          adb shell appops set com.gathin.tvhome WRITE_SETTINGS allow -->
