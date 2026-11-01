@@ -17,6 +17,8 @@ import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.net.Uri;
+import android.os.Handler;
+import android.os.Looper;
 import android.provider.Settings;
 import android.util.DisplayMetrics;
 import android.view.Gravity;
@@ -58,6 +60,8 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         void onTileFocusChanged(int position, boolean focused);
 
         void onTileSelected();
+
+        long selectSoundMs();
 
         /** Called for a D-pad direction key on a tile. Return true when handled (focus stays put). */
         boolean onTileVerticalKey(int position, int keyCode);
@@ -187,6 +191,8 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     /** Reorder mode: no empty dock slots, so every position holds a tile that can move. */
     private boolean reordering;
     private final TileListener listener;
+    private final Handler launchHandler = new Handler(Looper.getMainLooper());
+    private boolean launchPending;
     private final int dockSize;
     /** config dock_row: false makes the dock apps the first tiles of one plain grid (names shown, no empty slots). */
     private final boolean dockRow;
@@ -543,9 +549,23 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     }
 
     /** Opens the tile's activity by explicit component, with no extras: a card can name nothing else. */
-    @SuppressWarnings("deprecation")
     private void launch(Entry e) {
+        if (launchPending) return;
         listener.onTileSelected();
+        long delay = listener.selectSoundMs();
+        if (delay <= 0) {
+            launchNow(e);
+            return;
+        }
+        launchPending = true;
+        launchHandler.postDelayed(() -> {
+            launchPending = false;
+            launchNow(e);
+        }, delay);
+    }
+
+    @SuppressWarnings("deprecation")
+    private void launchNow(Entry e) {
         if (e.kind == Entry.HOME_SETTINGS) {
             ctx.startActivity(new Intent(ctx, HomeSettingsActivity.class)
                     .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));

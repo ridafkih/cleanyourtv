@@ -1875,6 +1875,11 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     }
 
     @Override
+    public long selectSoundMs() {
+        return navSound.selectSoundMs();
+    }
+
+    @Override
     public void onTileFocusChanged(int position, boolean focused) {
         if (!singleRow || !focused) return;
         zoomFocusedPosition = position;
@@ -3358,11 +3363,13 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     private void open(Intent i) {
         navSound.select();
         i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        try {
-            startActivity(i);
-        } catch (ActivityNotFoundException | SecurityException e) {
-            Toast.makeText(this, R.string.not_available, Toast.LENGTH_SHORT).show();
-        }
+        root.postDelayed(() -> {
+            try {
+                startActivity(i);
+            } catch (ActivityNotFoundException | SecurityException e) {
+                Toast.makeText(this, R.string.not_available, Toast.LENGTH_SHORT).show();
+            }
+        }, navSound.selectSoundMs());
     }
 
     /** `input_sources` in config.xml or a theme: "HW5=23" maps the framework input whose id ends in /HW5 to a vendor
