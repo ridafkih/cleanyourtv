@@ -44,10 +44,11 @@ function wav(buffer, samples, gain) {
   return Buffer.concat([header, data]);
 }
 
-for (const cue of process.argv.slice(2)) {
+for (const arg of process.argv.slice(2)) {
+  const [cue, emphasis] = arg.split(':');
   const { play } = await import(`${engine}?cue=${cue}`);
   current = undefined;
-  play(cue);
+  play(cue, emphasis ? { emphasis } : undefined);
   if (!current) throw new Error(`no context for ${cue}`);
   const buffer = await current.startRendering();
   let peak = 0;
