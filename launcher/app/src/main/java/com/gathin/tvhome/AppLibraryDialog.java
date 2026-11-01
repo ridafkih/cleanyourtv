@@ -168,6 +168,7 @@ final class AppLibraryDialog {
         catalogWidth = Math.min(dp(800), Math.max(dp(200), decor.getWidth() - dp(64)));
         int width = catalogWidth;
         int height = dp(280);
+        NavSound.silence(activity, panel);
         popup = new PopupWindow(panel, width, height, true);
         popup.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         popup.setOutsideTouchable(true);
@@ -525,6 +526,7 @@ final class AppLibraryDialog {
         if (spring != null) spring.cancel();
         View menuPanel = activity.getLayoutInflater().inflate(R.layout.popup_inputs, panel, false);
         LinearLayout rows = menuPanel.findViewById(R.id.rows);
+        NavSound.silence(activity, menuPanel);
         PopupWindow menu = new PopupWindow(menuPanel, dp(220), ViewGroup.LayoutParams.WRAP_CONTENT, true);
         actionPopup = menu;
         menu.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));

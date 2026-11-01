@@ -50,6 +50,7 @@ public final class LauncherSettingsActivity extends Activity {
     protected void onCreate(Bundle state) {
         super.onCreate(state);
         setContentView(R.layout.activity_launcher_settings);
+        NavSound.silence(this, getWindow().getDecorView());
         choices = getSharedPreferences(Config.SETTINGS_NAME, MODE_PRIVATE);
         Config config = Config.load(this);
         View reorderChoice = findViewById(R.id.reorderChoice);

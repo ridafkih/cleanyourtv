@@ -58,7 +58,6 @@ import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.View;
-import android.view.SoundEffectConstants;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.view.Window;
@@ -150,6 +149,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     private WallpaperPlayer wallpaperPlayer;
     private SceneryBackground scenery;
     private PixelShift pixelShift;
+    private NavSound navSound;
     private boolean ambientMode;
     private final Map<View, Float> ambientRestAlpha = new LinkedHashMap<>();
     private final Runnable enterAmbient = this::enterAmbientMode;
@@ -443,6 +443,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        navSound = new NavSound(this);
         density = getResources().getDisplayMetrics().density;
         // config.xml, overlaid by config.json from a pushed theme (see Config and tools/theme.sh).
         Config cfg = Config.load(this);
@@ -1426,6 +1427,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         unregisterReceiver(packageReceiver);
         wallpaperPlayer.close();
         scenery.close();
+        navSound.release();
         ConnectivityManager cm = getSystemService(ConnectivityManager.class);
         TvInputManager tim = (TvInputManager) getSystemService(TV_INPUT_SERVICE);
         if (tim != null) tim.unregisterCallback(inputCallback);
@@ -2558,8 +2560,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         }
         focusTile(target);
         // The default focus search clicks for Left/Right; Up/Down are handled here, so click for them too.
-        grid.playSoundEffect(keyCode == KeyEvent.KEYCODE_DPAD_UP
-                ? SoundEffectConstants.NAVIGATION_UP : SoundEffectConstants.NAVIGATION_DOWN);
+        navSound.vertical(grid, keyCode == KeyEvent.KEYCODE_DPAD_UP);
         return true;
     }
 
@@ -3654,6 +3655,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     }
 
     private PopupWindow glassPopup(View panel, int width) {
+        NavSound.silence(this, panel);
         final PopupWindow popup = new PopupWindow(panel, width, ViewGroup.LayoutParams.WRAP_CONTENT, true);
         popup.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));   // needed for Back to dismiss
         popup.setOutsideTouchable(true);
@@ -3995,6 +3997,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
 
         final Dialog dialog = new Dialog(this);
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        NavSound.silence(this, panel);
         dialog.setContentView(panel);
         dialog.setCanceledOnTouchOutside(false);
         Window w = dialog.getWindow();
